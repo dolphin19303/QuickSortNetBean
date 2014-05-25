@@ -29,7 +29,11 @@
  */
 package quicksort;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Point;
 import java.util.Random;
+import javax.swing.JFrame;
 
 public class Main extends javax.swing.JFrame {
 
@@ -41,16 +45,12 @@ public class Main extends javax.swing.JFrame {
         if (txtNumberArray != null && txtNumberArray.getText().length() > 0) {
             currentNumber = Integer.parseInt(txtNumberArray.getText());
         }
-        String displayToString = "";
+
         mNumberArray = new int[currentNumber];
-        for (int i = 0; i < mNumberArray.length; i++) {
+         for (int i = 0; i < mNumberArray.length; i++) {
             mNumberArray[i] = getRandom();
-            displayToString += String.valueOf(mNumberArray[i]);
-            if (i < mNumberArray.length - 1) {
-                displayToString += "  -  ";
-            }
         }
-        lblArray.setText(displayToString);
+        lblArray.setText(convertToString(mNumberArray));
     }
 
     public int getRandom() {
@@ -58,14 +58,138 @@ public class Main extends javax.swing.JFrame {
         return randomGenerator.nextInt(100);
     }
 
+    public void drawMovingOjbect() {
+        new JFrame("Draw a red box") {
+            Point pointStart = new Point(50, 50);
+            Point pointEnd = new Point(200, 200);
+
+            public void paint(Graphics g) {
+                super.paint(g);
+                if (pointStart != null) {
+                    g.setColor(Color.RED);
+                    g.drawRect(pointStart.x, pointStart.y, pointEnd.x, pointEnd.y);
+                }
+            }
+
+            {
+                setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+                setSize(300, 300);
+                setLocation(300, 300);
+                setVisible(true);
+                Thread t = new Thread(new Runnable() {
+                    public void run() {
+                        while (pointEnd.x > 0 && pointEnd.y > 0) {
+                            pointEnd = new Point(--pointEnd.x, --pointEnd.y);
+                            repaint();
+                            try {
+                                Thread.sleep(22);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        pointStart = null;
+                        pointEnd = null;
+                    }
+                });
+                t.setDaemon(true);
+                t.start();
+            }
+        };
+    }
+
     public Main() {
         initComponents();
+//        drawMovingOjbect();
+
+    }
+
+    private String convertToString(int[] intArray) {
+        String displayToString = "";
+
+        for (int i = 0; i < intArray.length; i++) {
+            displayToString += String.valueOf(intArray[i]);
+            if (i < intArray.length - 1) {
+                displayToString += "  -  ";
+            }
+        }
+        return displayToString;
+    }
+
+    private void updateCurrentArrayStatus() {
+        if (txtCurrentArrayStatus != null && mNumberArray != null) {
+            txtCurrentArrayStatus.setText(convertToString(mNumberArray));
+        }
+    }
+
+    public void startEmulate() {
+        Quicksort mQuicksort = new Quicksort();
+        mQuicksort.sort(mNumberArray);
+        updateCurrentArrayStatus();
+    }
+
+    public class Quicksort {
+
+        private int[] numbers;
+        private int number;
+
+        public void sort(int[] values) {
+            // check for empty or null array
+            if (values == null || values.length == 0) {
+                return;
+            }
+            this.numbers = values;
+            number = values.length;
+            quicksort(0, number - 1);
+        }
+
+        private void quicksort(int low, int high) {
+            int i = low, j = high;
+            // Get the pivot element from the middle of the list
+            int pivot = numbers[low + (high - low) / 2];
+
+            // Divide into two lists
+            while (i <= j) {
+                // If the current value from the left list is smaller then the pivot
+                // element then get the next element from the left list
+                while (numbers[i] < pivot) {
+                    i++;
+                }
+                // If the current value from the right list is larger then the pivot
+                // element then get the next element from the right list
+                while (numbers[j] > pivot) {
+                    j--;
+                }
+
+                // If we have found a values in the left list which is larger then
+                // the pivot element and if we have found a value in the right list
+                // which is smaller then the pivot element then we exchange the
+                // values.
+                // As we are done we can increase i and j
+                if (i <= j) {
+                    exchange(i, j);
+                    i++;
+                    j--;
+                }
+            }
+            // Recursion
+            if (low < j) {
+                quicksort(low, j);
+            }
+            if (i < high) {
+                quicksort(i, high);
+            }
+        }
+
+        private void exchange(int i, int j) {
+            int temp = numbers[i];
+            numbers[i] = numbers[j];
+            numbers[j] = temp;
+        }
     }
 
     /**
      * thiết lập giao diện người dùng
      */
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -81,8 +205,9 @@ public class Main extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         lblDescribeArray = new javax.swing.JLabel();
         lblArray = new javax.swing.JLabel();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        txtCurrentArrayStatus = new javax.swing.JLabel();
+        btnStart = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("QuickSort");
@@ -129,19 +254,39 @@ public class Main extends javax.swing.JFrame {
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(" Mô phỏng "));
 
-        lblDescribeArray.setText("Mảng tự sinh:");
+        lblDescribeArray.setText("Mảng tự sinh        :");
 
         lblArray.setText("không có gì");
+
+        jLabel2.setText("Trạng thái hiện tại:");
+
+        txtCurrentArrayStatus.setText("không có gì");
+
+        btnStart.setText("Mô phỏng");
+        btnStart.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnStartActionPerformed(evt);
+            }
+        });
 
         org.jdesktop.layout.GroupLayout jPanel2Layout = new org.jdesktop.layout.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .add(lblDescribeArray)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(lblArray)
+                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                    .add(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(jLabel2)
+                            .add(lblDescribeArray))
+                        .add(18, 18, 18)
+                        .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(lblArray)
+                            .add(txtCurrentArrayStatus)))
+                    .add(jPanel2Layout.createSequentialGroup()
+                        .add(189, 189, 189)
+                        .add(btnStart)))
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -151,12 +296,13 @@ public class Main extends javax.swing.JFrame {
                 .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
                     .add(lblDescribeArray)
                     .add(lblArray))
-                .addContainerGap(110, Short.MAX_VALUE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(jLabel2)
+                    .add(txtCurrentArrayStatus))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 67, Short.MAX_VALUE)
+                .add(btnStart))
         );
-
-        jButton3.setText("Cancel");
-
-        jButton4.setText("OK");
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -166,28 +312,16 @@ public class Main extends javax.swing.JFrame {
                 .addContainerGap()
                 .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(jPanel2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
-                        .add(0, 0, Short.MAX_VALUE)
-                        .add(jButton4)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(jButton3)))
+                    .add(jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
-
-        layout.linkSize(new java.awt.Component[] {jButton3, jButton4}, org.jdesktop.layout.GroupLayout.HORIZONTAL);
-
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
                 .add(6, 6, 6)
                 .add(jPanel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jPanel2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(1, 1, 1)
-                .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
-                    .add(jButton3)
-                    .add(jButton4))
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -204,6 +338,11 @@ public class Main extends javax.swing.JFrame {
     private void btnArrayNumberActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnArrayNumberActionPerformed
         onGenerateRandomClick();
     }//GEN-LAST:event_btnArrayNumberActionPerformed
+
+    private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartActionPerformed
+        startEmulate();
+
+    }//GEN-LAST:event_btnStartActionPerformed
 
     /**
      * @param args the command line arguments
@@ -243,13 +382,14 @@ public class Main extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnArrayNumber;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
+    private javax.swing.JButton btnStart;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JLabel lblArray;
     private javax.swing.JLabel lblDescribeArray;
+    private javax.swing.JLabel txtCurrentArrayStatus;
     private javax.swing.JTextField txtNumberArray;
     // End of variables declaration//GEN-END:variables
 
