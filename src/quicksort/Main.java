@@ -104,8 +104,8 @@ public class Main extends javax.swing.JFrame {
 
     public Main() {
         initComponents();
-        jPanel1.setVisible(false);
-        jPanel2.setVisible(false);
+//        jPanel1.setVisible(false);
+//        jPanel2.setVisible(false);
         startEmulate();
 //        drawMovingOjbect();
 
