@@ -204,9 +204,6 @@
           </Border>
         </Property>
       </Properties>
-      <AccessibilityProperties>
-        <Property name="AccessibleContext.accessibleName" type="java.lang.String" value="M&#xf4; ph&#x1ecf;ng"/>
-      </AccessibilityProperties>
 
       <Layout>
         <DimensionLayout dim="0">

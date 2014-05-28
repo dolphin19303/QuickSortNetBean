@@ -31,6 +31,7 @@ package quicksort;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.Point;
 import java.util.Random;
 
 import javax.swing.JFrame;
@@ -39,155 +40,159 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 public class Main extends javax.swing.JFrame {
 
-	// code xử lý chính
-	public int[] mNumberArray;
+    // code xử lý chính
+    public int[] mNumberArray;
+    
+    private void onGenerateRandomClick() {
+        int currentNumber = 0;
+        if (txtNumberArray != null && txtNumberArray.getText().length() > 0) {
+            currentNumber = Integer.parseInt(txtNumberArray.getText());
+        }
+        
+        mNumberArray = new int[currentNumber];
+        for (int i = 0; i < mNumberArray.length; i++) {
+            mNumberArray[i] = getRandom();
+        }
+        lblArray.setText(convertToString(mNumberArray));
+    }
+    
+    public int getRandom() {
+        Random randomGenerator = new Random();
+        return randomGenerator.nextInt(100);
+    }
+    
+    public Main() {
+        initComponents();
+    }
+    
+    private String convertToString(int[] intArray) {
+        String displayToString = "";
+        
+        for (int i = 0; i < intArray.length; i++) {
+            displayToString += String.valueOf(intArray[i]);
+            if (i < intArray.length - 1) {
+                displayToString += "  -  ";
+            }
+        }
+        return displayToString;
+    }
+    
+    private void updateCurrentArrayStatus() {
+        if (txtCurrentArrayStatus != null && mNumberArray != null) {
+            txtCurrentArrayStatus.setText(convertToString(mNumberArray));
+        }
+    }
+    
+    public void AnimatedBalls() {
+        EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    UIManager.setLookAndFeel(UIManager
+                            .getSystemLookAndFeelClassName());
+                } catch (ClassNotFoundException ex) {
+                } catch (InstantiationException ex) {
+                } catch (IllegalAccessException ex) {
+                } catch (UnsupportedLookAndFeelException ex) {
+                }
+                
+                JFrame frame = new JFrame();
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setLayout(new BorderLayout());
+                frame.setSize(400, 400);
+                frame.setVisible(true);
+            }
+        });
+    }
+    
+    public void startEmulate() {
+        Quicksort mQuickSort = new Quicksort();
+        mQuickSort.sort(mNumberArray);
+        updateCurrentArrayStatus();
+//		mPanelEmulator.setLayout(null);
+        Ball mBall1 = new Ball("red", new Point(10,50));
+        Ball mBall2 = new Ball("blue", new Point(300,50));
+        mPanelEmulator.add(mBall1);
+        mPanelEmulator.add(mBall2);
+        
+        mBall1.goRight(100);
+        mBall2.goLeft(100);
+    }
+    
+    public class Quicksort {
+        
+        private int[] numbers;
+        private int number;
+        
+        public void sort(int[] values) {
+            // check for empty or null array
+            if (values == null || values.length == 0) {
+                return;
+            }
+            this.numbers = values;
+            number = values.length;
+            quicksort(0, number - 1);
+        }
+        
+        private void quicksort(int low, int high) {
+            int i = low, j = high;
+            // Get the pivot element from the middle of the list
+            int pivot = numbers[low + (high - low) / 2];
 
-	private void onGenerateRandomClick() {
-		int currentNumber = 0;
-		if (txtNumberArray != null && txtNumberArray.getText().length() > 0) {
-			currentNumber = Integer.parseInt(txtNumberArray.getText());
-		}
+            // Divide into two lists
+            while (i <= j) {
+                // If the current value from the left list is smaller then the
+                // pivot
+                // element then get the next element from the left list
+                while (numbers[i] < pivot) {
+                    i++;
+                }
+                // If the current value from the right list is larger then the
+                // pivot
+                // element then get the next element from the right list
+                while (numbers[j] > pivot) {
+                    j--;
+                }
 
-		mNumberArray = new int[currentNumber];
-		for (int i = 0; i < mNumberArray.length; i++) {
-			mNumberArray[i] = getRandom();
-		}
-		lblArray.setText(convertToString(mNumberArray));
-	}
+                // If we have found a values in the left list which is larger
+                // then
+                // the pivot element and if we have found a value in the right
+                // list
+                // which is smaller then the pivot element then we exchange the
+                // values.
+                // As we are done we can increase i and j
+                if (i <= j) {
+                    exchange(i, j);
+                    i++;
+                    j--;
+                }
+            }
+            // Recursion
+            if (low < j) {
+                quicksort(low, j);
+            }
+            if (i < high) {
+                quicksort(i, high);
+            }
+        }
+        
+        private void exchange(int i, int j) {
+            int temp = numbers[i];
+            numbers[i] = numbers[j];
+            numbers[j] = temp;
+        }
+    }
 
-	public int getRandom() {
-		Random randomGenerator = new Random();
-		return randomGenerator.nextInt(100);
-	}
-
-	public Main() {
-		initComponents();
-	}
-
-	private String convertToString(int[] intArray) {
-		String displayToString = "";
-
-		for (int i = 0; i < intArray.length; i++) {
-			displayToString += String.valueOf(intArray[i]);
-			if (i < intArray.length - 1) {
-				displayToString += "  -  ";
-			}
-		}
-		return displayToString;
-	}
-
-	private void updateCurrentArrayStatus() {
-		if (txtCurrentArrayStatus != null && mNumberArray != null) {
-			txtCurrentArrayStatus.setText(convertToString(mNumberArray));
-		}
-	}
-
-	public void AnimatedBalls() {
-		EventQueue.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					UIManager.setLookAndFeel(UIManager
-							.getSystemLookAndFeelClassName());
-				} catch (ClassNotFoundException ex) {
-				} catch (InstantiationException ex) {
-				} catch (IllegalAccessException ex) {
-				} catch (UnsupportedLookAndFeelException ex) {
-				}
-
-				JFrame frame = new JFrame();
-				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				frame.setLayout(new BorderLayout());
-				frame.setSize(400, 400);
-				frame.setVisible(true);
-			}
-		});
-	}
-
-	public void startEmulate() {
-		mPanelEmulator.setLayout(null);
-		mPanelEmulator.add(new Ball("red",
-				10 - (int) Math.round((Math.random() * 20)), 10 - (int) Math
-						.round((Math.random() * 20))));
-		mPanelEmulator.add(new Ball("blue", 10 - (int) Math.round((Math
-				.random() * 20)), 10 - (int) Math.round((Math.random() * 20))));
-
-	}
-
-	public class Quicksort {
-
-		private int[] numbers;
-		private int number;
-
-		public void sort(int[] values) {
-			// check for empty or null array
-			if (values == null || values.length == 0) {
-				return;
-			}
-			this.numbers = values;
-			number = values.length;
-			quicksort(0, number - 1);
-		}
-
-		private void quicksort(int low, int high) {
-			int i = low, j = high;
-			// Get the pivot element from the middle of the list
-			int pivot = numbers[low + (high - low) / 2];
-
-			// Divide into two lists
-			while (i <= j) {
-				// If the current value from the left list is smaller then the
-				// pivot
-				// element then get the next element from the left list
-				while (numbers[i] < pivot) {
-					i++;
-				}
-				// If the current value from the right list is larger then the
-				// pivot
-				// element then get the next element from the right list
-				while (numbers[j] > pivot) {
-					j--;
-				}
-
-				// If we have found a values in the left list which is larger
-				// then
-				// the pivot element and if we have found a value in the right
-				// list
-				// which is smaller then the pivot element then we exchange the
-				// values.
-				// As we are done we can increase i and j
-				if (i <= j) {
-					exchange(i, j);
-					i++;
-					j--;
-				}
-			}
-			// Recursion
-			if (low < j) {
-				quicksort(low, j);
-			}
-			if (i < high) {
-				quicksort(i, high);
-			}
-		}
-
-		private void exchange(int i, int j) {
-			int temp = numbers[i];
-			numbers[i] = numbers[j];
-			numbers[j] = temp;
-		}
-	}
-
-	/**
-	 * thiết lập giao diện người dùng
-	 */
-	/**
-	 * This method is called from within the constructor to initialize the form.
-	 * WARNING: Do NOT modify this code. The content of this method is always
-	 * regenerated by the Form Editor.
-	 */
+    /**
+     * thiết lập giao diện người dùng
+     */
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
 	// <editor-fold defaultstate="collapsed"
-	// <editor-fold defaultstate="collapsed"
+    // <editor-fold defaultstate="collapsed"
 	// desc="Generated Code">//GEN-BEGIN:initComponents
 	private void initComponents() {
 
@@ -397,66 +402,65 @@ public class Main extends javax.swing.JFrame {
 		pack();
 	}// </editor-fold>//GEN-END:initComponents
 
-	private void txtNumberArrayActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_txtNumberArrayActionPerformed
-		// TODO add your handling code here:
-	}// GEN-LAST:event_txtNumberArrayActionPerformed
+    private void txtNumberArrayActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_txtNumberArrayActionPerformed
+        // TODO add your handling code here:
+    }// GEN-LAST:event_txtNumberArrayActionPerformed
 
-	private void btnArrayNumberActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnArrayNumberActionPerformed
-		onGenerateRandomClick();
-	}// GEN-LAST:event_btnArrayNumberActionPerformed
+    private void btnArrayNumberActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnArrayNumberActionPerformed
+        onGenerateRandomClick();
+    }// GEN-LAST:event_btnArrayNumberActionPerformed
 
-	private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnStartActionPerformed
-		startEmulate();
+    private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnStartActionPerformed
+        startEmulate();
+        
+    }// GEN-LAST:event_btnStartActionPerformed
 
-	}// GEN-LAST:event_btnStartActionPerformed
-
-	/**
-	 * @param args
-	 *            the command line arguments
-	 */
-	public static void main(String args[]) {
-		/* Set the Nimbus look and feel */
-		// <editor-fold defaultstate="collapsed"
-		// desc=" Look and feel setting code (optional) ">
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        // <editor-fold defaultstate="collapsed"
+        // desc=" Look and feel setting code (optional) ">
 		/*
-		 * If Nimbus (introduced in Java SE 6) is not available, stay with the
-		 * default look and feel. For details see
-		 * http://download.oracle.com/javase
-		 * /tutorial/uiswing/lookandfeel/plaf.html
-		 */
-		try {
-			javax.swing.UIManager.LookAndFeelInfo[] installedLookAndFeels = javax.swing.UIManager
-					.getInstalledLookAndFeels();
-			for (int idx = 0; idx < installedLookAndFeels.length; idx++) {
-				if ("Nimbus".equals(installedLookAndFeels[idx].getName())) {
-					javax.swing.UIManager
-							.setLookAndFeel(installedLookAndFeels[idx]
-									.getClassName());
-					break;
-				}
-			}
-		} catch (ClassNotFoundException ex) {
-			java.util.logging.Logger.getLogger(Main.class.getName()).log(
-					java.util.logging.Level.SEVERE, null, ex);
-		} catch (InstantiationException ex) {
-			java.util.logging.Logger.getLogger(Main.class.getName()).log(
-					java.util.logging.Level.SEVERE, null, ex);
-		} catch (IllegalAccessException ex) {
-			java.util.logging.Logger.getLogger(Main.class.getName()).log(
-					java.util.logging.Level.SEVERE, null, ex);
-		} catch (javax.swing.UnsupportedLookAndFeelException ex) {
-			java.util.logging.Logger.getLogger(Main.class.getName()).log(
-					java.util.logging.Level.SEVERE, null, ex);
-		}
-		// </editor-fold>
+         * If Nimbus (introduced in Java SE 6) is not available, stay with the
+         * default look and feel. For details see
+         * http://download.oracle.com/javase
+         * /tutorial/uiswing/lookandfeel/plaf.html
+         */
+        try {
+            javax.swing.UIManager.LookAndFeelInfo[] installedLookAndFeels = javax.swing.UIManager
+                    .getInstalledLookAndFeels();
+            for (int idx = 0; idx < installedLookAndFeels.length; idx++) {
+                if ("Nimbus".equals(installedLookAndFeels[idx].getName())) {
+                    javax.swing.UIManager
+                            .setLookAndFeel(installedLookAndFeels[idx]
+                                    .getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(Main.class.getName()).log(
+                    java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(Main.class.getName()).log(
+                    java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(Main.class.getName()).log(
+                    java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(Main.class.getName()).log(
+                    java.util.logging.Level.SEVERE, null, ex);
+        }
+        // </editor-fold>
 
-		/* Create and display the form */
-		java.awt.EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				new Main().setVisible(true);
-			}
-		});
-	}
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new Main().setVisible(true);
+            }
+        });
+    }
 
 	// Variables declaration - do not modify//GEN-BEGIN:variables
 	private javax.swing.JButton btnArrayNumber;

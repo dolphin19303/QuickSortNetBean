@@ -4,6 +4,8 @@ Hướng dẫn sử dụng
 Dự án làm trên netbean/eclipse. 
  + trên netbean: Vào file/Open Project và chọn đường dẫn tới thư mục để mở 
  + trên eclipse: Vào file/Import -> Existing projects into Workspace và chọn đường dẫn tới thư mục để mở
+Update 29/05/2014:
+ + Di chuyển bóng có hướng (Up, Down, Left, Right)
  
 Update 28/05/2014:
  + Thêm Demo 2 quả bóng
@@ -14,7 +16,7 @@ Old
 All
  + UI chương trình
  + Nhập array, sort và hiện lên textView
- + Hiển thị đồ họa với 2 hình tròn
+ + Hiển thị đồ họa và di chuyển có hướng
  
 Contact Editor
 --------------
