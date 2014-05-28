@@ -29,11 +29,16 @@
  */
 package quicksort;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.util.Random;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 public class Main extends javax.swing.JFrame {
 
@@ -47,7 +52,7 @@ public class Main extends javax.swing.JFrame {
         }
 
         mNumberArray = new int[currentNumber];
-         for (int i = 0; i < mNumberArray.length; i++) {
+        for (int i = 0; i < mNumberArray.length; i++) {
             mNumberArray[i] = getRandom();
         }
         lblArray.setText(convertToString(mNumberArray));
@@ -99,6 +104,9 @@ public class Main extends javax.swing.JFrame {
 
     public Main() {
         initComponents();
+        jPanel1.setVisible(false);
+        jPanel2.setVisible(false);
+        startEmulate();
 //        drawMovingOjbect();
 
     }
@@ -121,10 +129,45 @@ public class Main extends javax.swing.JFrame {
         }
     }
 
+    public void AnimatedBalls() {
+        EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                } catch (ClassNotFoundException ex) {
+                } catch (InstantiationException ex) {
+                } catch (IllegalAccessException ex) {
+                } catch (UnsupportedLookAndFeelException ex) {
+                }
+
+                JFrame frame = new JFrame();
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setLayout(new BorderLayout());
+                frame.add(new Balls());
+                frame.setSize(400, 400);
+                frame.setVisible(true);
+            }
+        });
+    }
+
+    public class Balls extends JPanel {
+
+        public Balls() {
+            setLayout(null);
+            // Randomize the speed and direction...
+            add(new Ball("red", 10 - (int) Math.round((Math.random() * 20)), 10 - (int) Math.round((Math.random() * 20))));
+            add(new Ball("blue", 10 - (int) Math.round((Math.random() * 20)), 10 - (int) Math.round((Math.random() * 20))));
+        }
+    }
+
     public void startEmulate() {
-        Quicksort mQuicksort = new Quicksort();
-        mQuicksort.sort(mNumberArray);
-        updateCurrentArrayStatus();
+//        Quicksort mQuicksort = new Quicksort();
+//        mQuicksort.sort(mNumberArray);
+//        updateCurrentArrayStatus();
+        add(new Ball("red", 10 - (int) Math.round((Math.random() * 20)), 10 - (int) Math.round((Math.random() * 20))));
+        add(new Ball("blue", 10 - (int) Math.round((Math.random() * 20)), 10 - (int) Math.round((Math.random() * 20))));
+
     }
 
     public class Quicksort {
