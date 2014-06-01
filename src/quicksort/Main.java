@@ -29,170 +29,215 @@
  */
 package quicksort;
 
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
-import java.awt.Point;
 import java.util.Random;
 
-import javax.swing.JFrame;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import quicksort.Ball.MoveCallback;
+import quicksort.QuickSort.QuickSortCallback;
 
 public class Main extends javax.swing.JFrame {
 
-    // code xử lý chính
-    public int[] mNumberArray;
-    
-    private void onGenerateRandomClick() {
-        int currentNumber = 0;
-        if (txtNumberArray != null && txtNumberArray.getText().length() > 0) {
-            currentNumber = Integer.parseInt(txtNumberArray.getText());
-        }
-        
-        mNumberArray = new int[currentNumber];
-        for (int i = 0; i < mNumberArray.length; i++) {
-            mNumberArray[i] = getRandom();
-        }
-        lblArray.setText(convertToString(mNumberArray));
-    }
-    
-    public int getRandom() {
-        Random randomGenerator = new Random();
-        return randomGenerator.nextInt(100);
-    }
-    
-    public Main() {
-        initComponents();
-    }
-    
-    private String convertToString(int[] intArray) {
-        String displayToString = "";
-        
-        for (int i = 0; i < intArray.length; i++) {
-            displayToString += String.valueOf(intArray[i]);
-            if (i < intArray.length - 1) {
-                displayToString += "  -  ";
-            }
-        }
-        return displayToString;
-    }
-    
-    private void updateCurrentArrayStatus() {
-        if (txtCurrentArrayStatus != null && mNumberArray != null) {
-            txtCurrentArrayStatus.setText(convertToString(mNumberArray));
-        }
-    }
-    
-    public void AnimatedBalls() {
-        EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    UIManager.setLookAndFeel(UIManager
-                            .getSystemLookAndFeelClassName());
-                } catch (ClassNotFoundException ex) {
-                } catch (InstantiationException ex) {
-                } catch (IllegalAccessException ex) {
-                } catch (UnsupportedLookAndFeelException ex) {
-                }
-                
-                JFrame frame = new JFrame();
-                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                frame.setLayout(new BorderLayout());
-                frame.setSize(400, 400);
-                frame.setVisible(true);
-            }
-        });
-    }
-    
-    public void startEmulate() {
-        Quicksort mQuickSort = new Quicksort();
-        mQuickSort.sort(mNumberArray);
-        updateCurrentArrayStatus();
-//		mPanelEmulator.setLayout(null);
-        Ball mBall1 = new Ball("red", new Point(10,50));
-        Ball mBall2 = new Ball("blue", new Point(300,50));
-        mPanelEmulator.add(mBall1);
-        mPanelEmulator.add(mBall2);
-        
-        mBall1.goRight(100);
-        mBall2.goLeft(100);
-    }
-    
-    public class Quicksort {
-        
-        private int[] numbers;
-        private int number;
-        
-        public void sort(int[] values) {
-            // check for empty or null array
-            if (values == null || values.length == 0) {
-                return;
-            }
-            this.numbers = values;
-            number = values.length;
-            quicksort(0, number - 1);
-        }
-        
-        private void quicksort(int low, int high) {
-            int i = low, j = high;
-            // Get the pivot element from the middle of the list
-            int pivot = numbers[low + (high - low) / 2];
+	// code xử lý chính
+	private int[] mNumberArray;
 
-            // Divide into two lists
-            while (i <= j) {
-                // If the current value from the left list is smaller then the
-                // pivot
-                // element then get the next element from the left list
-                while (numbers[i] < pivot) {
-                    i++;
-                }
-                // If the current value from the right list is larger then the
-                // pivot
-                // element then get the next element from the right list
-                while (numbers[j] > pivot) {
-                    j--;
-                }
+	private int iDelayTime = 7000;
+	private MatrixManager mMatrixManager;
+	private Ball[] mBalls;
+	private QuickSort mQuickSort;
+	private MRectangle rect;
+	private boolean statusOfThread1, statusOfThread2;
 
-                // If we have found a values in the left list which is larger
-                // then
-                // the pivot element and if we have found a value in the right
-                // list
-                // which is smaller then the pivot element then we exchange the
-                // values.
-                // As we are done we can increase i and j
-                if (i <= j) {
-                    exchange(i, j);
-                    i++;
-                    j--;
-                }
-            }
-            // Recursion
-            if (low < j) {
-                quicksort(low, j);
-            }
-            if (i < high) {
-                quicksort(i, high);
-            }
-        }
-        
-        private void exchange(int i, int j) {
-            int temp = numbers[i];
-            numbers[i] = numbers[j];
-            numbers[j] = temp;
-        }
-    }
+	private void onGenerateRandomClick() {
+		int currentNumber = 0;
+		if (txtNumberArray != null && txtNumberArray.getText().length() > 0) {
+			currentNumber = Integer.parseInt(txtNumberArray.getText());
+		}
+		iDelayTime = currentNumber * 1000 + 4000;
+		mNumberArray = new int[currentNumber];
+		for (int i = 0; i < mNumberArray.length; i++) {
+			mNumberArray[i] = getRandom();
+		}
+		lblArray.setText(convertToString(mNumberArray));
+	}
 
-    /**
-     * thiết lập giao diện người dùng
-     */
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
+	private int getRandom() {
+		Random randomGenerator = new Random();
+		return randomGenerator.nextInt(100);
+	}
+
+	public Main() {
+		initComponents();
+	}
+
+	private String convertToString(int[] intArray) {
+		String displayToString = "";
+
+		for (int i = 0; i < intArray.length; i++) {
+			displayToString += String.valueOf(intArray[i]);
+			if (i < intArray.length - 1) {
+				displayToString += "  -  ";
+			}
+		}
+		return displayToString;
+	}
+
+	private void updateCurrentArrayStatus() {
+		if (txtCurrentArrayStatus != null && mNumberArray != null) {
+			txtCurrentArrayStatus.setText(convertToString(mNumberArray));
+		}
+	}
+
+	public void startEmulate() {
+		mPanelEmulator.removeAll();
+		txtCurrentArrayStatus.setText("Không có gì");
+		txtStatusEmulator.setText("Không có gì");
+		rect = new MRectangle();
+		onGenerateRandomClick();
+		mQuickSort = new QuickSort();
+		mQuickSort.setListener(new QuickSortCallback() {
+
+			@Override
+			public void onSwap(int posA, int posB) {
+
+				statusOfThread1 = false;
+				statusOfThread2 = false;
+				txtStatusEmulator.setText("Hoán đổi     "
+						+ mBalls[posA].getNumber() + " và "
+						+ mBalls[posB].getNumber());
+				swapBall(posA, posB);
+
+			}
+
+			@Override
+			public void onShowFence(int posA, int posB) {
+				iDelayTime = (posB - posA) * 1000 + 2000;
+				int x1 = (int) mMatrixManager.getPositionTopLeftRectangleOf(
+						posA).getX();
+				int y1 = (int) mMatrixManager.getPositionTopLeftRectangleOf(
+						posA).getY();
+				int x2 = (int) mMatrixManager
+						.getPositionBottomRightRectangleOf(posB).getX();
+				int y2 = (int) mMatrixManager
+						.getPositionBottomRightRectangleOf(posB).getY();
+				rect.addSquare(x1, y1, x2 - x1, y2 - y1);
+			}
+		});
+
+		mPanelEmulator.setLayout(null);
+		mMatrixManager = new MatrixManager(mNumberArray.length, 30, 10,
+				mPanelEmulator.getWidth(), mPanelEmulator.getHeight() - 20);
+		mBalls = new Ball[mNumberArray.length];
+		for (int i = 0; i < mNumberArray.length; i++) {
+			mBalls[i] = new Ball("red", mMatrixManager.getPositionOfItem(i),
+					mNumberArray[i]);
+			mPanelEmulator.add(mBalls[i]);
+		}
+		mPanelEmulator.add(rect);
+		mQuickSort.sort(mNumberArray);
+
+	}
+
+	private boolean isSwapComplete() {
+		if (statusOfThread1 && statusOfThread2) {
+			statusOfThread1 = false;
+			statusOfThread2 = false;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	protected void notifyToContinue(int pos1, int pos2) {
+		if (isSwapComplete()) {
+			updateCurrentArrayStatus();
+			mBalls[pos1].setColor("red");
+			mBalls[pos2].setColor("red");
+			if (pos1 != pos2) {
+				Ball tgBall = mBalls[pos1];
+				mBalls[pos1] = mBalls[pos2];
+				mBalls[pos2] = tgBall;
+			}
+			sleep(1000);
+			mQuickSort.notifyToContinue();
+		}
+	}
+
+	private void sleep(int time) {
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
+	}
+
+	private void swapBall(final int b1, final int b2) {
+		mBalls[b1].setColor("blue");
+		mBalls[b2].setColor("blue");
+		sleep(1000);
+		if (mBalls[b1].equals(mBalls[b2])) {
+			mBalls[b1].moveTo(mMatrixManager.getPositionAboveOfItem(b1),
+					mMatrixManager.getPositionAboveOfItem(b2),
+					mMatrixManager.getPositionOfItem(b2), new MoveCallback() {
+
+						@Override
+						public void onMoveFailed() {
+
+						}
+
+						@Override
+						public void onMoveComplete() {
+							statusOfThread1 = true;
+							statusOfThread2 = true;
+							notifyToContinue(b1, b2);
+						}
+					});
+		} else {
+			mBalls[b1].moveTo(mMatrixManager.getPositionAboveOfItem(b1),
+					mMatrixManager.getPositionAboveOfItem(b2),
+					mMatrixManager.getPositionOfItem(b2), new MoveCallback() {
+
+						@Override
+						public void onMoveFailed() {
+
+						}
+
+						@Override
+						public void onMoveComplete() {
+							statusOfThread1 = true;
+							notifyToContinue(b1, b2);
+						}
+					});
+
+			mBalls[b2].moveTo(mMatrixManager.getPositionBelowOfItem(b2),
+					mMatrixManager.getPositionBelowOfItem(b1),
+					mMatrixManager.getPositionOfItem(b1), new MoveCallback() {
+
+						@Override
+						public void onMoveFailed() {
+
+						}
+
+						@Override
+						public void onMoveComplete() {
+							statusOfThread2 = true;
+							notifyToContinue(b1, b2);
+						}
+					});
+		}
+		sleep(iDelayTime);
+	}
+
+	/**
+	 * thiết lập giao diện người dùng
+	 */
+	/**
+	 * This method is called from within the constructor to initialize the form.
+	 * WARNING: Do NOT modify this code. The content of this method is always
+	 * regenerated by the Form Editor.
+	 */
 	// <editor-fold defaultstate="collapsed"
-    // <editor-fold defaultstate="collapsed"
+	// <editor-fold defaultstate="collapsed"
+	// <editor-fold defaultstate="collapsed"
+	// <editor-fold defaultstate="collapsed"
 	// desc="Generated Code">//GEN-BEGIN:initComponents
 	private void initComponents() {
 
@@ -206,7 +251,10 @@ public class Main extends javax.swing.JFrame {
 		jLabel2 = new javax.swing.JLabel();
 		txtCurrentArrayStatus = new javax.swing.JLabel();
 		btnStart = new javax.swing.JButton();
+		jLabel3 = new javax.swing.JLabel();
+		txtStatusEmulator = new javax.swing.JLabel();
 		mPanelEmulator = new javax.swing.JPanel();
+		txtStatus = new javax.swing.JLabel();
 
 		setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 		setTitle("QuickSort");
@@ -280,6 +328,10 @@ public class Main extends javax.swing.JFrame {
 			}
 		});
 
+		jLabel3.setText("Đang thực hiện    : ");
+
+		txtStatusEmulator.setText("không có gì");
+
 		org.jdesktop.layout.GroupLayout jPanel2Layout = new org.jdesktop.layout.GroupLayout(
 				jPanel2);
 		jPanel2.setLayout(jPanel2Layout);
@@ -299,16 +351,18 @@ public class Main extends javax.swing.JFrame {
 														.createParallelGroup(
 																org.jdesktop.layout.GroupLayout.LEADING)
 														.add(jLabel2)
-														.add(lblDescribeArray))
+														.add(lblDescribeArray)
+														.add(jLabel3))
 												.add(18, 18, 18)
 												.add(jPanel2Layout
 														.createParallelGroup(
 																org.jdesktop.layout.GroupLayout.LEADING)
+														.add(txtStatusEmulator)
 														.add(lblArray)
 														.add(txtCurrentArrayStatus)))
 										.add(jPanel2Layout
 												.createSequentialGroup()
-												.add(177, 177, 177)
+												.add(175, 175, 175)
 												.add(btnStart)))
 								.addContainerGap(
 										org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
@@ -319,9 +373,6 @@ public class Main extends javax.swing.JFrame {
 								org.jdesktop.layout.GroupLayout.LEADING)
 						.add(jPanel2Layout
 								.createSequentialGroup()
-								.addContainerGap(
-										org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-										Short.MAX_VALUE)
 								.add(jPanel2Layout
 										.createParallelGroup(
 												org.jdesktop.layout.GroupLayout.BASELINE)
@@ -335,6 +386,12 @@ public class Main extends javax.swing.JFrame {
 										.add(txtCurrentArrayStatus))
 								.addPreferredGap(
 										org.jdesktop.layout.LayoutStyle.RELATED)
+								.add(jPanel2Layout
+										.createParallelGroup(
+												org.jdesktop.layout.GroupLayout.BASELINE)
+										.add(jLabel3).add(txtStatusEmulator))
+								.addPreferredGap(
+										org.jdesktop.layout.LayoutStyle.RELATED)
 								.add(btnStart)));
 
 		mPanelEmulator.setBorder(javax.swing.BorderFactory
@@ -345,10 +402,13 @@ public class Main extends javax.swing.JFrame {
 		mPanelEmulator.setLayout(mPanelEmulatorLayout);
 		mPanelEmulatorLayout.setHorizontalGroup(mPanelEmulatorLayout
 				.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-				.add(0, 474, Short.MAX_VALUE));
+				.add(mPanelEmulatorLayout.createSequentialGroup()
+						.add(161, 161, 161).add(txtStatus)
+						.addContainerGap(313, Short.MAX_VALUE)));
 		mPanelEmulatorLayout.setVerticalGroup(mPanelEmulatorLayout
 				.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-				.add(0, 149, Short.MAX_VALUE));
+				.add(mPanelEmulatorLayout.createSequentialGroup()
+						.add(txtStatus).add(0, 129, Short.MAX_VALUE)));
 
 		org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(
 				getContentPane());
@@ -393,80 +453,81 @@ public class Main extends javax.swing.JFrame {
 						.add(mPanelEmulator,
 								org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
 								org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-								Short.MAX_VALUE)));
+								Short.MAX_VALUE).addContainerGap()));
 
 		jPanel1.getAccessibleContext().setAccessibleName("Nhập phần tử");
 		jPanel1.getAccessibleContext().setAccessibleDescription("");
-		mPanelEmulator.getAccessibleContext().setAccessibleName("Mô phỏng");
 
 		pack();
 	}// </editor-fold>//GEN-END:initComponents
 
-    private void txtNumberArrayActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_txtNumberArrayActionPerformed
-        // TODO add your handling code here:
-    }// GEN-LAST:event_txtNumberArrayActionPerformed
+	private void txtNumberArrayActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_txtNumberArrayActionPerformed
+		// TODO add your handling code here:
+	}// GEN-LAST:event_txtNumberArrayActionPerformed
 
-    private void btnArrayNumberActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnArrayNumberActionPerformed
-        onGenerateRandomClick();
-    }// GEN-LAST:event_btnArrayNumberActionPerformed
+	private void btnArrayNumberActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnArrayNumberActionPerformed
+		onGenerateRandomClick();
+	}// GEN-LAST:event_btnArrayNumberActionPerformed
 
-    private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnStartActionPerformed
-        startEmulate();
-        
-    }// GEN-LAST:event_btnStartActionPerformed
+	private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnStartActionPerformed
+		startEmulate();
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        // <editor-fold defaultstate="collapsed"
-        // desc=" Look and feel setting code (optional) ">
+	}// GEN-LAST:event_btnStartActionPerformed
+
+	/**
+	 * @param args
+	 *            the command line arguments
+	 */
+	public static void main(String args[]) {
+		/* Set the Nimbus look and feel */
+		// <editor-fold defaultstate="collapsed"
+		// desc=" Look and feel setting code (optional) ">
 		/*
-         * If Nimbus (introduced in Java SE 6) is not available, stay with the
-         * default look and feel. For details see
-         * http://download.oracle.com/javase
-         * /tutorial/uiswing/lookandfeel/plaf.html
-         */
-        try {
-            javax.swing.UIManager.LookAndFeelInfo[] installedLookAndFeels = javax.swing.UIManager
-                    .getInstalledLookAndFeels();
-            for (int idx = 0; idx < installedLookAndFeels.length; idx++) {
-                if ("Nimbus".equals(installedLookAndFeels[idx].getName())) {
-                    javax.swing.UIManager
-                            .setLookAndFeel(installedLookAndFeels[idx]
-                                    .getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Main.class.getName()).log(
-                    java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Main.class.getName()).log(
-                    java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Main.class.getName()).log(
-                    java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Main.class.getName()).log(
-                    java.util.logging.Level.SEVERE, null, ex);
-        }
-        // </editor-fold>
+		 * If Nimbus (introduced in Java SE 6) is not available, stay with the
+		 * default look and feel. For details see
+		 * http://download.oracle.com/javase
+		 * /tutorial/uiswing/lookandfeel/plaf.html
+		 */
+		try {
+			javax.swing.UIManager.LookAndFeelInfo[] installedLookAndFeels = javax.swing.UIManager
+					.getInstalledLookAndFeels();
+			for (int idx = 0; idx < installedLookAndFeels.length; idx++) {
+				if ("Nimbus".equals(installedLookAndFeels[idx].getName())) {
+					javax.swing.UIManager
+							.setLookAndFeel(installedLookAndFeels[idx]
+									.getClassName());
+					break;
+				}
+			}
+		} catch (ClassNotFoundException ex) {
+			java.util.logging.Logger.getLogger(Main.class.getName()).log(
+					java.util.logging.Level.SEVERE, null, ex);
+		} catch (InstantiationException ex) {
+			java.util.logging.Logger.getLogger(Main.class.getName()).log(
+					java.util.logging.Level.SEVERE, null, ex);
+		} catch (IllegalAccessException ex) {
+			java.util.logging.Logger.getLogger(Main.class.getName()).log(
+					java.util.logging.Level.SEVERE, null, ex);
+		} catch (javax.swing.UnsupportedLookAndFeelException ex) {
+			java.util.logging.Logger.getLogger(Main.class.getName()).log(
+					java.util.logging.Level.SEVERE, null, ex);
+		}
+		// </editor-fold>
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Main().setVisible(true);
-            }
-        });
-    }
+		/* Create and display the form */
+		java.awt.EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				new Main().setVisible(true);
+			}
+		});
+	}
 
 	// Variables declaration - do not modify//GEN-BEGIN:variables
 	private javax.swing.JButton btnArrayNumber;
 	private javax.swing.JButton btnStart;
 	private javax.swing.JLabel jLabel1;
 	private javax.swing.JLabel jLabel2;
+	private javax.swing.JLabel jLabel3;
 	private javax.swing.JPanel jPanel1;
 	private javax.swing.JPanel jPanel2;
 	private javax.swing.JLabel lblArray;
@@ -474,6 +535,8 @@ public class Main extends javax.swing.JFrame {
 	private javax.swing.JPanel mPanelEmulator;
 	private javax.swing.JLabel txtCurrentArrayStatus;
 	private javax.swing.JTextField txtNumberArray;
+	private javax.swing.JLabel txtStatus;
+	private javax.swing.JLabel txtStatusEmulator;
 	// End of variables declaration//GEN-END:variables
 
 }
