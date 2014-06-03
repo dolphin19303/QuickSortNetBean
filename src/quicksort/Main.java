@@ -152,7 +152,7 @@ public class Main extends javax.swing.JFrame {
 			mBalls[pos1].setColor("red");
 			mBalls[pos2].setColor("red");
 			if (pos1 != pos2) {
-				Ball tgBall = new Ball(mBalls[pos1]);
+				Ball tgBall = mBalls[pos1];
 				mBalls[pos1] = mBalls[pos2];
 				mBalls[pos2] = tgBall;
 			}
