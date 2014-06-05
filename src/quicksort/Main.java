@@ -39,13 +39,25 @@ public class Main extends javax.swing.JFrame {
 	// code xử lý chính
 	private int[] mNumberArray;
 
+	// thời gian trễ cho mỗi lần di chuyển
 	private int iDelayTime = 7000;
+
+	// đối tượng quản lý tính địa điểm
 	private MatrixManager mMatrixManager;
+
+	// mảng các đối tượng bóng
 	private Ball[] mBalls;
+
+	// đối tượng quản lý giải thuật quick sort
 	private QuickSort mQuickSort;
+
+	// đối tượng vẽ hình chữ nhật
 	private MRectangle rect;
+
+	// biến cờ đánh dấu trạng thái luồng của 2 quả bóng
 	private boolean statusOfThread1, statusOfThread2;
 
+	// Tạo random giá trị
 	private void onGenerateRandomClick() {
 		int currentNumber = 0;
 		if (txtNumberArray != null && txtNumberArray.getText().length() > 0) {
@@ -59,15 +71,18 @@ public class Main extends javax.swing.JFrame {
 		lblArray.setText(convertToString(mNumberArray));
 	}
 
+	// hàm lấy giá trị random
 	private int getRandom() {
 		Random randomGenerator = new Random();
 		return randomGenerator.nextInt(100);
 	}
 
+	// hàm chính, bắt đầu chương trình
 	public Main() {
 		initComponents();
 	}
 
+	// Hàm đổi từ mảng sang chuỗi để hiển thị lên label
 	private String convertToString(int[] intArray) {
 		String displayToString = "";
 
@@ -80,12 +95,14 @@ public class Main extends javax.swing.JFrame {
 		return displayToString;
 	}
 
+	// hàm cập nhật giá trị mảng lên label
 	private void updateCurrentArrayStatus() {
 		if (txtCurrentArrayStatus != null && mNumberArray != null) {
 			txtCurrentArrayStatus.setText(convertToString(mNumberArray));
 		}
 	}
 
+	// Hàm bắt đầu chạy mô phỏng
 	public void startEmulate() {
 		mPanelEmulator.removeAll();
 		txtCurrentArrayStatus.setText("Không có gì");
@@ -136,6 +153,7 @@ public class Main extends javax.swing.JFrame {
 
 	}
 
+	// hàm kiểm tra xem 2 quả bóng đã di chuyển và đổi chỗ xong chưa
 	private boolean isSwapComplete() {
 		if (statusOfThread1 && statusOfThread2) {
 			statusOfThread1 = false;
@@ -146,6 +164,7 @@ public class Main extends javax.swing.JFrame {
 		}
 	}
 
+	// hàm thông báo lại khi đã di chuyển xong
 	protected void notifyToContinue(int pos1, int pos2) {
 		if (isSwapComplete()) {
 			updateCurrentArrayStatus();
@@ -161,6 +180,7 @@ public class Main extends javax.swing.JFrame {
 		}
 	}
 
+	// hàm delay chương trình
 	private void sleep(int time) {
 		try {
 			Thread.sleep(1000);
@@ -169,6 +189,7 @@ public class Main extends javax.swing.JFrame {
 		}
 	}
 
+	// hàm đổi chỗ 2 quả bóng b1 và b2
 	private void swapBall(final int b1, final int b2) {
 		mBalls[b1].setColor("blue");
 		mBalls[b2].setColor("blue");
