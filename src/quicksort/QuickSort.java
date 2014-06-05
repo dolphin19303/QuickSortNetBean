@@ -1,11 +1,16 @@
 package quicksort;
 
 public class QuickSort implements Runnable {
+	// mảng phần tử
 	private int[] numbers;
 	private int number;
+
+	// biến cờ lưu trạng thái có thể tiếp tục chạy
 	private boolean canContinue = true;
+	// hàm thông báo lahị
 	QuickSortCallback mCallback;
 
+	// bắt đầu giải thuật
 	public void sort(int[] values) {
 		// check for empty or null array
 		if (values == null || values.length == 0) {
@@ -16,10 +21,12 @@ public class QuickSort implements Runnable {
 		(new Thread(this)).start();
 	}
 
+	// thêm đối tượng lắng nghe cho quicksort
 	public void setListener(QuickSortCallback mCallback) {
 		this.mCallback = mCallback;
 	}
 
+	// đệ quy giải thuật
 	private void quicksort(int low, int high) {
 		int i = low, j = high;
 		// Get the pivot element from the middle of the list
@@ -72,10 +79,12 @@ public class QuickSort implements Runnable {
 		}
 	}
 
+	// thông báo QuickSort có thể chạy bước tiếp theo
 	public void notifyToContinue() {
 		canContinue = true;
 	}
 
+	// thông báo lại là đang hoán đổi vị trí 2 số
 	private void exchange(int i, int j) {
 		int temp = numbers[i];
 		numbers[i] = numbers[j];
