@@ -10,27 +10,25 @@ import java.awt.RenderingHints;
 import javax.swing.JPanel;
 
 public class MRectangle extends JPanel {
-	private Rectangle rect;
-	int iWidth;
-	int iHeight;
-	int x, y;
+	// chiều dài, rộng của hình chữ nhật
+	int iWidth, iHeight;
 
+	// hàm khởi tạo và vẽ hình chữ nhật
 	public void addSquare(int x, int y, int width, int height) {
-		rect = new Rectangle(x, y, width, height);
 		this.iWidth = width;
 		this.iHeight = height;
-		this.x = x;
-		this.y = y;
 		setSize(getPreferredSize());
 		setBounds(x, y, iWidth + 10, iHeight + 1);
 		repaint();
 	}
 
+	// trả lại kích cỡ của hình chữ nhật
 	@Override
 	public Dimension getPreferredSize() {
 		return new Dimension(iWidth, iHeight);
 	}
 
+	// hàm vẽ hình chữ nhật lên jpanel
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);

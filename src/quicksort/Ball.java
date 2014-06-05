@@ -19,23 +19,45 @@ import javax.swing.SwingUtilities;
 
 public class Ball extends JPanel implements Runnable {
 
+	// khởi tạo các biến cho đối tượng Ball
+	// màu
 	private Color color;
+	// thời gian trễ (càng ít thì càng tốn CPU & chạy nhanh)
 	private long delay = 10;
+	// giá trị số trên quả bóng
 	private int number;
+	// trạng thái di chuyển của bóng
 	private boolean stop;
+	// tốc độ di chuyển của bóng
 	private int speed = 1;
+	// kích thước của bóng
 	private int ballSize = 30;
+
+	// điểm di chuyển tới của quả bóng
 	private Point ptDestinationPoint;
-	public static final int MODE_MOVE_ABOVE = 0;
-	public static final int MODE_NORMAL = 1;
-	private JLabel mNumberLabel;
-	private int mode;
-	private boolean oneTimeNotify;
+	// điểm bắt đầu quả quả bóng
 	private Point startLocation;
-	private MoveCallback mCallback;
-	private Thread mThread;
+	// các điểm trung gian trong khi di chuyển
 	private Point path1, path2;
 
+	// các chế độ di chuyển
+	private int mode;
+	public static final int MODE_MOVE_ABOVE = 0;
+	public static final int MODE_NORMAL = 1;
+
+	// Đối tượng label để hiển thị số trên quả bóng
+	private JLabel mNumberLabel;
+
+	// cờ đánh dấu thông báo 1 lần
+	private boolean oneTimeNotify;
+
+	// Callback thông báo sau khi di chuyển xong
+	private MoveCallback mCallback;
+
+	// luồng xử lý
+	private Thread mThread;
+
+	// constructor
 	public Ball(String ballcolor, Point startLocation, int number) {
 		setColor(ballcolor);
 		this.number = number;
@@ -46,6 +68,7 @@ public class Ball extends JPanel implements Runnable {
 		setMLocation(startLocation.x, startLocation.y);
 	}
 
+	// hàm set màu cho bóng
 	public void setColor(String ballcolor) {
 		if (ballcolor == "red") {
 			color = Color.red;
@@ -77,47 +100,41 @@ public class Ball extends JPanel implements Runnable {
 		repaint();
 	}
 
-	public Ball(Ball mBall) {
-		color = mBall.getColor();
-		delay = mBall.getDelay();
-		number = mBall.getNumber();
-		startLocation = mBall.getStartLocation();
-		setLayout(null);
-		initLabel(number);
-		setMLocation(startLocation.x, startLocation.y);
-	}
-
+	// hàm lấy màu
 	public Color getColor() {
 		return color;
 	}
 
+	// hàm lấy thời gian trễ
 	public long getDelay() {
 		return delay;
 	}
 
+	// hàm lấy vị trí hiện tại
 	public Point getStartLocation() {
 		return startLocation;
 	}
 
+	// hàm lấy giá trị số của bóng
 	public int getNumber() {
 		return number;
 	}
 
+	// hàm gán tọa độ cho bóng
 	public void setMLocation(int x, int y) {
 		// setLocation(x, y);
 		setBounds(x, y, ballSize + 1, ballSize + 1);
 	}
 
-	public void moveTo(Point pt, MoveCallback mCallback) {
-		mode = MODE_NORMAL;
-		oneTimeNotify = false;
-		ptDestinationPoint = new Point(pt);
-		stop = false;
-		this.mCallback = mCallback;
-		mThread = new Thread(this);
-		mThread.start();
+	// hàm khởi tạo giá trị và hiển thị số cho bóng
+	private void initLabel(int number) {
+		setLayout(new FlowLayout());
+		mNumberLabel = new JLabel(String.valueOf(number), JLabel.LEFT);
+		add(mNumberLabel);
 	}
 
+	// hàm di chuyển bóng thông qua vị trí path1 -> path2 -> pt và thông báo lại
+	// qua mCallback
 	public void moveTo(Point path1, Point path2, Point pt,
 			MoveCallback mCallback) {
 		mode = MODE_MOVE_ABOVE;
@@ -131,20 +148,7 @@ public class Ball extends JPanel implements Runnable {
 		mThread.start();
 	}
 
-	public void moveAboveTo(Point pt, MoveCallback mCallback) {
-		ptDestinationPoint = new Point(pt);
-		stop = false;
-		this.mCallback = mCallback;
-		mThread = new Thread(this);
-		mThread.start();
-	}
-
-	private void initLabel(int number) {
-		setLayout(new FlowLayout());
-		mNumberLabel = new JLabel(String.valueOf(number), JLabel.LEFT);
-		add(mNumberLabel);
-	}
-
+	// hàm vẽ bóng
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D) g;
@@ -158,11 +162,13 @@ public class Ball extends JPanel implements Runnable {
 
 	}
 
+	// trả về kích cỡ của bóng
 	@Override
 	public Dimension getPreferredSize() {
 		return new Dimension(ballSize, ballSize);
 	}
 
+	// Hàm khởi tạo luồng để di chuyển bóng
 	public void run() {
 
 		try {
@@ -206,6 +212,7 @@ public class Ball extends JPanel implements Runnable {
 		}
 	}
 
+	// hàm di chuyển bóng tới vị trí ptDestinationPoint
 	private void moveTo(Point ptDestinationPoint) {
 
 		int x = getX();
@@ -257,6 +264,7 @@ public class Ball extends JPanel implements Runnable {
 		}
 	}
 
+	// hàm di chuyển bóng tới nhiều vị trí. path1 -> path2 -> ptDestinationPoint
 	private void moveToMultiple() {
 
 		int x = getX();
@@ -285,6 +293,7 @@ public class Ball extends JPanel implements Runnable {
 		}
 	}
 
+	// interface để callback
 	public interface MoveCallback {
 		public void onMoveComplete();
 
