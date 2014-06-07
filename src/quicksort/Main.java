@@ -183,7 +183,7 @@ public class Main extends javax.swing.JFrame {
 	// hàm delay chương trình
 	private void sleep(int time) {
 		try {
-			Thread.sleep(1000);
+			Thread.sleep(time);
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}
