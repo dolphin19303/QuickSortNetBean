@@ -56,6 +56,7 @@ public class Main extends javax.swing.JFrame {
 
 	// biến cờ đánh dấu trạng thái luồng của 2 quả bóng
 	private boolean statusOfThread1, statusOfThread2;
+	int iCustomDelay = 0;
 
 	// Tạo random giá trị
 	private void onGenerateRandomClick() {
@@ -63,7 +64,13 @@ public class Main extends javax.swing.JFrame {
 		if (txtNumberArray != null && txtNumberArray.getText().length() > 0) {
 			currentNumber = Integer.parseInt(txtNumberArray.getText());
 		}
-		iDelayTime = currentNumber * 1000 + 4000;
+
+		try {
+			iCustomDelay = Integer.parseInt(txtDelay.getText());
+		} catch (Exception e) {
+			iCustomDelay = 0;
+		}
+		iDelayTime = currentNumber * 1000 + 2000 + iCustomDelay;
 		mNumberArray = new int[currentNumber];
 		for (int i = 0; i < mNumberArray.length; i++) {
 			mNumberArray[i] = getRandom();
@@ -126,7 +133,12 @@ public class Main extends javax.swing.JFrame {
 
 			@Override
 			public void onShowFence(int posA, int posB) {
-				iDelayTime = (posB - posA) * 1000 + 2000;
+				try {
+					iCustomDelay = Integer.parseInt(txtDelay.getText());
+				} catch (Exception e) {
+					iCustomDelay = 0;
+				}
+				iDelayTime = (posB - posA) * 1000 + 2000 + iCustomDelay;
 				int x1 = (int) mMatrixManager.getPositionTopLeftRectangleOf(
 						posA).getX();
 				int y1 = (int) mMatrixManager.getPositionTopLeftRectangleOf(
@@ -259,6 +271,7 @@ public class Main extends javax.swing.JFrame {
 	// <editor-fold defaultstate="collapsed"
 	// <editor-fold defaultstate="collapsed"
 	// <editor-fold defaultstate="collapsed"
+	// <editor-fold defaultstate="collapsed"
 	// desc="Generated Code">//GEN-BEGIN:initComponents
 	private void initComponents() {
 
@@ -274,6 +287,8 @@ public class Main extends javax.swing.JFrame {
 		btnStart = new javax.swing.JButton();
 		jLabel3 = new javax.swing.JLabel();
 		txtStatusEmulator = new javax.swing.JLabel();
+		txtDelay = new javax.swing.JTextField();
+		jLabel4 = new javax.swing.JLabel();
 		mPanelEmulator = new javax.swing.JPanel();
 		txtStatus = new javax.swing.JLabel();
 
@@ -353,6 +368,15 @@ public class Main extends javax.swing.JFrame {
 
 		txtStatusEmulator.setText("không có gì");
 
+		txtDelay.setText("2000");
+		txtDelay.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				txtDelayActionPerformed(evt);
+			}
+		});
+
+		jLabel4.setText("Delay:");
+
 		org.jdesktop.layout.GroupLayout jPanel2Layout = new org.jdesktop.layout.GroupLayout(
 				jPanel2);
 		jPanel2.setLayout(jPanel2Layout);
@@ -378,16 +402,34 @@ public class Main extends javax.swing.JFrame {
 												.add(jPanel2Layout
 														.createParallelGroup(
 																org.jdesktop.layout.GroupLayout.LEADING)
-														.add(txtStatusEmulator)
-														.add(lblArray)
-														.add(txtCurrentArrayStatus)))
+														.add(jPanel2Layout
+																.createSequentialGroup()
+																.add(jPanel2Layout
+																		.createParallelGroup(
+																				org.jdesktop.layout.GroupLayout.LEADING)
+																		.add(lblArray)
+																		.add(txtStatusEmulator))
+																.add(0,
+																		0,
+																		Short.MAX_VALUE))
+														.add(jPanel2Layout
+																.createSequentialGroup()
+																.add(txtCurrentArrayStatus)
+																.addPreferredGap(
+																		org.jdesktop.layout.LayoutStyle.RELATED,
+																		org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+																		Short.MAX_VALUE)
+																.add(jLabel4)
+																.add(18, 18, 18)
+																.add(txtDelay,
+																		org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
+																		69,
+																		org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))))
 										.add(jPanel2Layout
 												.createSequentialGroup()
 												.add(175, 175, 175)
 												.add(btnStart)))
-								.addContainerGap(
-										org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-										Short.MAX_VALUE)));
+								.addContainerGap()));
 		jPanel2Layout
 				.setVerticalGroup(jPanel2Layout
 						.createParallelGroup(
@@ -402,9 +444,20 @@ public class Main extends javax.swing.JFrame {
 										org.jdesktop.layout.LayoutStyle.RELATED)
 								.add(jPanel2Layout
 										.createParallelGroup(
-												org.jdesktop.layout.GroupLayout.BASELINE)
-										.add(jLabel2)
-										.add(txtCurrentArrayStatus))
+												org.jdesktop.layout.GroupLayout.LEADING)
+										.add(jPanel2Layout
+												.createParallelGroup(
+														org.jdesktop.layout.GroupLayout.BASELINE)
+												.add(jLabel2)
+												.add(txtCurrentArrayStatus))
+										.add(jPanel2Layout
+												.createParallelGroup(
+														org.jdesktop.layout.GroupLayout.BASELINE)
+												.add(txtDelay,
+														org.jdesktop.layout.GroupLayout.PREFERRED_SIZE,
+														org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+														org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+												.add(jLabel4)))
 								.addPreferredGap(
 										org.jdesktop.layout.LayoutStyle.RELATED)
 								.add(jPanel2Layout
@@ -429,7 +482,7 @@ public class Main extends javax.swing.JFrame {
 		mPanelEmulatorLayout.setVerticalGroup(mPanelEmulatorLayout
 				.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
 				.add(mPanelEmulatorLayout.createSequentialGroup()
-						.add(txtStatus).add(0, 129, Short.MAX_VALUE)));
+						.add(txtStatus).add(0, 123, Short.MAX_VALUE)));
 
 		org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(
 				getContentPane());
@@ -442,10 +495,6 @@ public class Main extends javax.swing.JFrame {
 						.add(layout
 								.createParallelGroup(
 										org.jdesktop.layout.GroupLayout.LEADING)
-								.add(jPanel2,
-										org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-										org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-										Short.MAX_VALUE)
 								.add(jPanel1,
 										org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
 										org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
@@ -454,7 +503,10 @@ public class Main extends javax.swing.JFrame {
 										mPanelEmulator,
 										org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
 										org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
-										Short.MAX_VALUE)).addContainerGap()));
+										Short.MAX_VALUE)).addContainerGap())
+				.add(jPanel2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+						org.jdesktop.layout.GroupLayout.DEFAULT_SIZE,
+						Short.MAX_VALUE));
 		layout.setVerticalGroup(layout.createParallelGroup(
 				org.jdesktop.layout.GroupLayout.LEADING).add(
 				layout.createSequentialGroup()
@@ -481,6 +533,10 @@ public class Main extends javax.swing.JFrame {
 
 		pack();
 	}// </editor-fold>//GEN-END:initComponents
+
+	private void txtDelayActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_txtDelayActionPerformed
+		// TODO add your handling code here:
+	}// GEN-LAST:event_txtDelayActionPerformed
 
 	private void txtNumberArrayActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_txtNumberArrayActionPerformed
 		// TODO add your handling code here:
@@ -549,12 +605,14 @@ public class Main extends javax.swing.JFrame {
 	private javax.swing.JLabel jLabel1;
 	private javax.swing.JLabel jLabel2;
 	private javax.swing.JLabel jLabel3;
+	private javax.swing.JLabel jLabel4;
 	private javax.swing.JPanel jPanel1;
 	private javax.swing.JPanel jPanel2;
 	private javax.swing.JLabel lblArray;
 	private javax.swing.JLabel lblDescribeArray;
 	private javax.swing.JPanel mPanelEmulator;
 	private javax.swing.JLabel txtCurrentArrayStatus;
+	private javax.swing.JTextField txtDelay;
 	private javax.swing.JTextField txtNumberArray;
 	private javax.swing.JLabel txtStatus;
 	private javax.swing.JLabel txtStatusEmulator;
