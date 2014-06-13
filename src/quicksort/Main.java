@@ -29,6 +29,9 @@
  */
 package quicksort;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Random;
 
 import quicksort.Ball.MoveCallback;
@@ -78,6 +81,37 @@ public class Main extends javax.swing.JFrame {
 		lblArray.setText(convertToString(mNumberArray));
 	}
 
+	private void readFile() {
+		BufferedReader br = null;
+		String readedString = "";
+		try {
+			String sCurrentLine = "";
+			br = new BufferedReader(new FileReader("C:\\data.txt"));
+
+			while ((sCurrentLine = br.readLine()) != null) {
+				readedString = new String(sCurrentLine);
+			}
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (br != null)
+					br.close();
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+		}
+		int currentNumber = 0;
+		String[] splitedArray = readedString.split(" ");
+		currentNumber = splitedArray.length;
+		mNumberArray = new int[currentNumber];
+		for (int i = 0; i < mNumberArray.length; i++) {
+			mNumberArray[i] = Integer.parseInt(splitedArray[i]);
+		}
+		lblArray.setText(convertToString(mNumberArray));
+	}
+
 	// hàm lấy giá trị random
 	private int getRandom() {
 		Random randomGenerator = new Random();
@@ -115,7 +149,8 @@ public class Main extends javax.swing.JFrame {
 		txtCurrentArrayStatus.setText("Không có gì");
 		txtStatusEmulator.setText("Không có gì");
 		rect = new MRectangle();
-		onGenerateRandomClick();
+		// onGenerateRandomClick();
+		readFile();
 		mQuickSort = new QuickSort();
 		mQuickSort.setListener(new QuickSortCallback() {
 
